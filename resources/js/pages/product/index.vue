@@ -10,21 +10,32 @@
 
                     <div class="card-body">
                         <table class="table">
-                            <tr>
-                                <th width="10%">Sl.</th>
-                                <th width="40%">Name</th>
-                                <th width="30%">Slug</th>
-                                <th width="20%">Action</th>
-                            </tr>
-                            <tr v-for="category in categories" :key="category.id">
-                                <td>{{category.id}}</td>
-                                <td>{{category.name}}</td>
-                                <td>{{category.slug}}</td>
-                                <td>
-                                    <router-link :to="{name: 'product-edit', params: {id: category.id}}" class="btn btn-primary btn-sm">Edit</router-link>
-                                    <a @click.prevent="categoryDelete(category)" href="#" class="btn btn-danger btn-sm">Delete</a>
-                                </td>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th width="10%">Sl.</th>
+                                    <th width="20%">Name</th>
+                                    <th width="10%">price</th>
+                                    <th width="40%">Description</th>
+                                    <th width="20%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody  v-if="products.length">
+                                <tr v-for="product in products" :key="product.id">
+                                    <td>{{product.id}}</td>
+                                    <td>{{product.name}}</td>
+                                    <td>{{product.price}}</td>
+                                    <td>{{product.description}}</td>
+                                    <td>
+                                        <router-link :to="{name: 'product-edit', params: {id: product.id}}" class="btn btn-primary btn-sm">Edit</router-link>
+                                        <a @click.prevent="productDelete(product)" href="#" class="btn btn-danger btn-sm">Delete</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else>
+                                <tr>
+                                    <td colspan="4" style="text-align: center;">No Product Found</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -37,34 +48,34 @@
     export default {
         data(){
             return{
-                categories: []
+                products: []
             }
         },
         methods: {
-            loadCategory(){
-                axios.get('/api/category')
+            loadProduct(){
+                axios.get('/api/product')
                     .then(response => {
-                        this.categories = response.data
+                        console.log(response.products);
+                        this.products = response.data;
                     });
             },
-            categoryDelete(category){
-                axios.delete(`/api/category/${category.id}`)
+            productDelete(product){
+                axios.delete(`/api/product/${product.id}`)
                     .then(()=>{
                         this.$toast.success({
                             title:'Success',
-                            message:'Category Delete Successfuly'
+                            message:'Product Delete Successfuly'
                         })
                     })
                 var that = this;
                 setTimeout(function () {
-                    let categoryIndex = that.categories.indexOf(category);
-                    that.categories.splice(categoryIndex, 1);
+                    let productIndex = that.products.indexOf(product);
+                    that.products.splice(productIndex, 1);
                 }, 1000);
-
             }
         },
         mounted() {
-            this.loadCategory();
+            this.loadProduct();
         }
     }
 </script>

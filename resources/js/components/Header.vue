@@ -4,7 +4,7 @@
             <router-link class="navbar-brand" :to="{name: 'home'}">Site Logo</router-link>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <router-link class="nav-link" :to="{name: 'home'}">Homes</router-link>
                     </li>
                     <li class="nav-item">

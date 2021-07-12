@@ -25,19 +25,12 @@ class CategoryController extends Controller
         $this->validate($request, [
             'name' => 'required'
         ]);
-        // $validator = Validator::make($request->all(), [
-        //     'name' => 'required'
-        // ]);
-        // if ($validator->passes()) {
-            $category = Category::create([
-                'name' => $request->name,
-                'slug' => Str::slug($request->name)
-            ]);
+        $category = Category::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name)
+        ]);
 
-            return response()->json('success', 200);
-        // }else {
-        //     return response()->json('error', 200);
-        // }
+        return response()->json('success', 200);
 
     }
 
