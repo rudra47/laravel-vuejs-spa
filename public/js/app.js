@@ -2243,6 +2243,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vform */ "./node_modules/vform/dist/vform.es.js");
+/* harmony import */ var object_to_formdata__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! object-to-formdata */ "./node_modules/object-to-formdata/dist/index.module.js");
+/* harmony import */ var object_to_formdata__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(object_to_formdata__WEBPACK_IMPORTED_MODULE_2__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -2296,12 +2298,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       productForm: new vform__WEBPACK_IMPORTED_MODULE_1__["default"]({
         name: '',
         price: '',
+        image: '',
         description: ''
       })
     };
@@ -2311,13 +2315,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return _this.productForm.post('/api/product').then(function () {
+                return _this.productForm.post('/api/product', {
+                  transformRequest: [function (data, headers) {
+                    return Object(object_to_formdata__WEBPACK_IMPORTED_MODULE_2__["objectToFormData"])(data);
+                  }],
+                  onUploadProgress: function onUploadProgress(e) {
+                    // Do whatever you want with the progress event
+                    console.log(e);
+                  }
+                }).then(function () {
                   _this.productForm.name = '';
                   _this.productForm.price = '';
                   _this.productForm.description = '';
@@ -2329,21 +2340,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
 
               case 2:
-                response = _context.sent;
-
-              case 3:
               case "end":
                 return _context.stop();
             }
           }
         }, _callee);
       }))();
-    } // productCreate(){
+    },
+    // productCreate(){
     //     axios.post('/api/category', {name: this.name}).then(response => {
     //         console.log(response);
     //     });
     // }
-
+    onImageChange: function onImageChange(e) {
+      console.log(e);
+      var file = e.target.files[0];
+      this.productForm.image = file;
+    }
   }
 });
 
@@ -2476,6 +2489,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -35256,6 +35271,108 @@ return jQuery;
 
 /***/ }),
 
+/***/ "./node_modules/object-to-formdata/dist/index.module.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/object-to-formdata/dist/index.module.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const isUndefined = (value) => value === undefined;
+
+const isNull = (value) => value === null;
+
+const isBoolean = (value) => typeof value === 'boolean';
+
+const isObject = (value) => value === Object(value);
+
+const isArray = (value) => Array.isArray(value);
+
+const isDate = (value) => value instanceof Date;
+
+const isBlob = (value) =>
+  value &&
+  typeof value.size === 'number' &&
+  typeof value.type === 'string' &&
+  typeof value.slice === 'function';
+
+const isFile = (value) =>
+  isBlob(value) &&
+  typeof value.name === 'string' &&
+  (typeof value.lastModifiedDate === 'object' ||
+    typeof value.lastModified === 'number');
+
+const serialize = (obj, cfg, fd, pre) => {
+  cfg = cfg || {};
+
+  cfg.indices = isUndefined(cfg.indices) ? false : cfg.indices;
+
+  cfg.nullsAsUndefineds = isUndefined(cfg.nullsAsUndefineds)
+    ? false
+    : cfg.nullsAsUndefineds;
+
+  cfg.booleansAsIntegers = isUndefined(cfg.booleansAsIntegers)
+    ? false
+    : cfg.booleansAsIntegers;
+
+  cfg.allowEmptyArrays = isUndefined(cfg.allowEmptyArrays)
+    ? false
+    : cfg.allowEmptyArrays;
+
+  fd = fd || new FormData();
+
+  if (isUndefined(obj)) {
+    return fd;
+  } else if (isNull(obj)) {
+    if (!cfg.nullsAsUndefineds) {
+      fd.append(pre, '');
+    }
+  } else if (isBoolean(obj)) {
+    if (cfg.booleansAsIntegers) {
+      fd.append(pre, obj ? 1 : 0);
+    } else {
+      fd.append(pre, obj);
+    }
+  } else if (isArray(obj)) {
+    if (obj.length) {
+      obj.forEach((value, index) => {
+        const key = pre + '[' + (cfg.indices ? index : '') + ']';
+
+        serialize(value, cfg, fd, key);
+      });
+    } else if (cfg.allowEmptyArrays) {
+      fd.append(pre + '[]', '');
+    }
+  } else if (isDate(obj)) {
+    fd.append(pre, obj.toISOString());
+  } else if (isObject(obj) && !isFile(obj) && !isBlob(obj)) {
+    Object.keys(obj).forEach((prop) => {
+      const value = obj[prop];
+
+      if (isArray(value)) {
+        while (prop.length > 2 && prop.lastIndexOf('[]') === prop.length - 2) {
+          prop = prop.substring(0, prop.length - 2);
+        }
+      }
+
+      const key = pre ? pre + '[' + prop + ']' : prop;
+
+      serialize(value, cfg, fd, key);
+    });
+  } else {
+    fd.append(pre, obj);
+  }
+
+  return fd;
+};
+
+module.exports = {
+  serialize,
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/popper.js/dist/esm/popper.js":
 /*!***************************************************!*\
   !*** ./node_modules/popper.js/dist/esm/popper.js ***!
@@ -40313,7 +40430,8 @@ var render = function() {
                       _vm._v(" "),
                       _c("input", {
                         staticClass: "form-control-file",
-                        attrs: { type: "file", name: "image" }
+                        attrs: { type: "file", name: "image" },
+                        on: { change: _vm.onImageChange }
                       }),
                       _vm._v(" "),
                       _vm.productForm.errors.has("image")
@@ -40691,6 +40809,16 @@ var render = function() {
                       return _c("tr", { key: product.id }, [
                         _c("td", [_vm._v(_vm._s(product.id))]),
                         _vm._v(" "),
+                        _c("td", [
+                          _c("img", {
+                            attrs: {
+                              src: product.image,
+                              alt: product.name,
+                              width: "60"
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(product.name))]),
                         _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(product.price))]),
@@ -40752,11 +40880,13 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", { attrs: { width: "10%" } }, [_vm._v("Sl.")]),
         _vm._v(" "),
+        _c("th", { attrs: { width: "10%" } }, [_vm._v("Image")]),
+        _vm._v(" "),
         _c("th", { attrs: { width: "20%" } }, [_vm._v("Name")]),
         _vm._v(" "),
         _c("th", { attrs: { width: "10%" } }, [_vm._v("price")]),
         _vm._v(" "),
-        _c("th", { attrs: { width: "40%" } }, [_vm._v("Description")]),
+        _c("th", { attrs: { width: "30%" } }, [_vm._v("Description")]),
         _vm._v(" "),
         _c("th", { attrs: { width: "20%" } }, [_vm._v("Action")])
       ])

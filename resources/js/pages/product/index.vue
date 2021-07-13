@@ -13,15 +13,17 @@
                             <thead>
                                 <tr>
                                     <th width="10%">Sl.</th>
+                                    <th width="10%">Image</th>
                                     <th width="20%">Name</th>
                                     <th width="10%">price</th>
-                                    <th width="40%">Description</th>
+                                    <th width="30%">Description</th>
                                     <th width="20%">Action</th>
                                 </tr>
                             </thead>
                             <tbody  v-if="products.length">
                                 <tr v-for="product in products" :key="product.id">
                                     <td>{{product.id}}</td>
+                                    <td><img :src="product.image" :alt="product.name" width="60"></td>
                                     <td>{{product.name}}</td>
                                     <td>{{product.price}}</td>
                                     <td>{{product.description}}</td>

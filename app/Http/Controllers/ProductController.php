@@ -33,12 +33,19 @@ class ProductController extends Controller
             'description' => 'required'
         ]);
 
-        $category = Product::create([
+        $product = Product::create([
             'name'        => $request->name,
             'slug'        => Str::slug($request->name),
             'price'       => $request->price,
             'description' => $request->description
         ]);
+
+        if($request->image){
+            $imageName = time().'_'. uniqid() .'.'.$request->image->getClientOriginalExtension();
+            $request->image->move(public_path('storage/product'), $imageName);
+            $product->image = '/storage/product/' . $imageName;
+            $product->save();
+        }
 
         return response()->json('success', 200);
 

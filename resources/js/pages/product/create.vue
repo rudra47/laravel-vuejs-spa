@@ -23,7 +23,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="image">Product Image</label>
-                                        <input type="file" class="form-control-file" name="image">
+                                        <input type="file" class="form-control-file" @change="onImageChange" name="image">
                                         <div v-if="productForm.errors.has('image')" v-html="productForm.errors.get('image')" />
                                     </div>
                                     <div class="form-group">
@@ -46,18 +46,28 @@
 
 <script>
 import Form from 'vform';
+import { objectToFormData } from 'object-to-formdata'
 
 export default {
     data: () => ({
         productForm: new Form({
             name: '',
             price: '',
+            image: '',
             description: ''
         })
     }),
     methods: {
         async productCreate () {
-            const response = await this.productForm.post('/api/product').then(() => {
+            await this.productForm.post('/api/product', {
+                    transformRequest: [function (data, headers) {
+                        return objectToFormData(data)
+                    }],
+                    onUploadProgress: e => {
+                        // Do whatever you want with the progress event
+                        console.log(e)
+                    }
+                }).then(() => {
                 this.productForm.name  = '';
                 this.productForm.price = '';
                 this.productForm.description = '';
@@ -67,13 +77,18 @@ export default {
                     message:'Product Create Successfuly'
                 })
             });
-        }
+        },
         // productCreate(){
             
         //     axios.post('/api/category', {name: this.name}).then(response => {
         //         console.log(response);
         //     });
         // }
+        onImageChange(e){
+            console.log(e);
+            const file = e.target.files[0];
+            this.productForm.image = file;
+        }
     }
 }
 </script>
