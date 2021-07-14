@@ -70,10 +70,10 @@
                         })
                     })
                 var that = this;
-                setTimeout(function () {
-                    let productIndex = that.products.indexOf(product);
-                    that.products.splice(productIndex, 1);
-                }, 1000);
+                // setTimeout(function () {
+                //     let productIndex = that.products.indexOf(product);
+                //     that.products.splice(productIndex, 1);
+                // }, 1000);
             }
         },
         mounted() {

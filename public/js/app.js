@@ -2374,6 +2374,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vform */ "./node_modules/vform/dist/vform.es.js");
+/* harmony import */ var object_to_formdata__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! object-to-formdata */ "./node_modules/object-to-formdata/dist/index.module.js");
+/* harmony import */ var object_to_formdata__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(object_to_formdata__WEBPACK_IMPORTED_MODULE_2__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -2426,6 +2428,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -2433,8 +2446,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       productForm: new vform__WEBPACK_IMPORTED_MODULE_1__["default"]({
         name: '',
         price: '',
-        description: ''
-      })
+        image: '',
+        description: '',
+        _method: 'put'
+      }),
+      existImage: ''
     };
   },
   methods: {
@@ -2449,7 +2465,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 id = _this.$route.params.id;
                 _context.next = 3;
-                return _this.productForm.put("/api/product/".concat(id)).then(function () {
+                return _this.productForm.post('/api/product/' + id, {
+                  transformRequest: [function (data, headers) {
+                    return Object(object_to_formdata__WEBPACK_IMPORTED_MODULE_2__["objectToFormData"])(data);
+                  }],
+                  onUploadProgress: function onUploadProgress(e) {
+                    // Do whatever you want with the progress event
+                    console.log(e);
+                  }
+                }).then(function () {
                   _this.$toast.success({
                     title: 'Success',
                     message: 'Product Update Successfuly'
@@ -2469,8 +2493,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       var id = this.$route.params.id;
       axios.get("/api/product/".concat(id, "/edit")).then(function (response) {
-        _this2.productForm.name = response.data.name, _this2.productForm.price = response.data.price, _this2.productForm.description = response.data.description;
+        _this2.productForm.name = response.data.name, _this2.productForm.price = response.data.price, _this2.productForm.description = response.data.description, _this2.existImage = response.data.image;
       });
+    },
+    onImageChange: function onImageChange(e) {
+      var file = e.target.files[0];
+      this.productForm.image = file;
     }
   },
   mounted: function mounted() {
@@ -2561,11 +2589,10 @@ __webpack_require__.r(__webpack_exports__);
           message: 'Product Delete Successfuly'
         });
       });
-      var that = this;
-      setTimeout(function () {
-        var productIndex = that.products.indexOf(product);
-        that.products.splice(productIndex, 1);
-      }, 1000);
+      var that = this; // setTimeout(function () {
+      //     let productIndex = that.products.indexOf(product);
+      //     that.products.splice(productIndex, 1);
+      // }, 1000);
     }
   },
   mounted: function mounted() {
@@ -40541,7 +40568,9 @@ var render = function() {
             "div",
             { staticClass: "card-header d-flex justify-content-between" },
             [
-              _c("h2", [_vm._v("Product Edit")]),
+              _c("h2", [
+                _vm._v("Product Edit - " + _vm._s(_vm.productForm.name))
+              ]),
               _vm._v(" "),
               _c(
                 "router-link",
@@ -40661,25 +40690,42 @@ var render = function() {
                         : _vm._e()
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "image" } }, [
-                        _vm._v("Product Image")
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-8" }, [
+                        _c("div", { staticClass: "form-group" }, [
+                          _c("label", { attrs: { for: "image" } }, [
+                            _vm._v("Product Image")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            staticClass: "form-control-file",
+                            attrs: { type: "file", name: "image" },
+                            on: { change: _vm.onImageChange }
+                          }),
+                          _vm._v(" "),
+                          _vm.productForm.errors.has("image")
+                            ? _c("div", {
+                                domProps: {
+                                  innerHTML: _vm._s(
+                                    _vm.productForm.errors.get("image")
+                                  )
+                                }
+                              })
+                            : _vm._e()
+                        ])
                       ]),
                       _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control-file",
-                        attrs: { type: "file", name: "image" }
-                      }),
-                      _vm._v(" "),
-                      _vm.productForm.errors.has("image")
-                        ? _c("div", {
-                            domProps: {
-                              innerHTML: _vm._s(
-                                _vm.productForm.errors.get("image")
-                              )
+                      _c("div", { staticClass: "col-4" }, [
+                        _c("div", [
+                          _c("img", {
+                            staticClass: "img-fluid",
+                            attrs: {
+                              src: _vm.existImage,
+                              alt: _vm.productForm.name
                             }
                           })
-                        : _vm._e()
+                        ])
+                      ])
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [

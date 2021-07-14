@@ -46,12 +46,12 @@
 
 <script>
 import Form from 'vform';
-import { objectToFormData } from 'object-to-formdata'
+import { objectToFormData } from 'object-to-formdata';
 
 export default {
     data: () => ({
         productForm: new Form({
-            name: '',
+            name : '',
             price: '',
             image: '',
             description: ''
