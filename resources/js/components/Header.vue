@@ -13,8 +13,35 @@
                     <li class="nav-item">
                         <router-link class="nav-link" :to="{name: 'product-list'}">Product</router-link>
                     </li>
+                    <li class="nav-item" v-if="checkAuth">
+                        <router-link class="nav-link" :to="{name: 'dashboard'}">Dashboard</router-link>
+                    </li>
+                    <li class="nav-item" v-if="!checkAuth">
+                        <router-link class="nav-link" :to="{name: 'login'}">Login</router-link>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 </template>
+
+<script>
+export default {
+    methods: {
+        // logout(){
+        //     axios.post('/logout').then(response => {
+        //         this.$router.push('login');
+        //         this.$toast.success({
+        //             title:'Success',
+        //             message:'Logout Successfuly'
+        //         });
+        //     });
+        // }
+    },
+    computed: {
+        checkAuth(){
+            return this.$store.getters.getAuthenticated;
+        }
+    }
+}
+</script>

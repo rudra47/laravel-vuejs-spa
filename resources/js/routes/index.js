@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from '../pages/Home.vue';
+import Login from '../pages/login.vue';
 import CategoryList from '../pages/category/index.vue';
 import CategoryCreate from "../pages/category/create.vue";
 import CategoryEdit from "../pages/category/edit.vue";
@@ -8,6 +9,7 @@ import CategoryEdit from "../pages/category/edit.vue";
 import ProductList from '../pages/product/index.vue';
 import ProductCreate from "../pages/product/create.vue";
 import ProductEdit from "../pages/product/edit.vue";
+import Dashboard from "../pages/dashboard/index.vue";
 
 Vue.use(VueRouter);
 
@@ -49,6 +51,16 @@ const routes = new VueRouter({
             path: '/product/edit/:id', 
             component: ProductEdit,
             name: 'product-edit'
+        },
+        {
+            path: '/login', 
+            component: Login,
+            name: 'login'
+        },
+        {
+            path: '/dashboard', 
+            component: Dashboard,
+            name: 'dashboard'
         }
     ]
 })
